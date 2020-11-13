@@ -1,63 +1,29 @@
 import os
-import subprocess
-import shutil
 
-def replaceFileName(file_name):
-    return file_name.replace("\\", "/")
-
-# string = str("..\Music\Yazoo\Upstairs at Eric's\09 - Situation.mp3")
-# # print("this= ", replaceFileName(u"..\Music\Yazoo\Upstairs at Eric's\09 - Situation.mp3"))
-# print(string)
-
-def convertPlaylist(filename, destination_filename):
-    playlist = open(filename, 'r+')
+def convertPlaylist(filename, output_filename):
+    playlist = open(filename, 'r+', encoding='utf-8')
     arr = playlist.readlines()
     newArr = []
-    newPlaylist = open(destination_filename, 'w+')
+    newPlaylist = open(output_filename, 'w+', encoding='utf-8')
     for song_path in arr:
-        newPlaylist.writelines(replaceFileName(song_path))
+        newPlaylist.writelines(song_path.replace("\\", "/"))
     playlist.close()
     newPlaylist.close()
 
-convertPlaylist("./playlists/Coolin'.m3u", "./output/Coolin'.m3u")
-# convertPlaylist("./playlists/Frou.m3u", "./output/Frou.m3u")
-convertPlaylist("./playlists/Chillipity hop.m3u", "./output/Chillipity hop.m3u")
-convertPlaylist("./playlists/Cuts.m3u", "./output/Cuts.m3u")
-convertPlaylist("./playlists/Howlin.m3u", "./output/Howlin.m3u")
-convertPlaylist("./playlists/Oneirophrenia.m3u", "./output/Oneirophrenia.m3u")
+def convertAll():
+    origin = os.getcwd()
+    original_folder = origin + "\playlists"
+    os.chdir(original_folder)
 
-def get_m3u(filename):
-    return filename[-3:] == 'm3u'
+    playlist_names = os.listdir(original_folder)
+    for playlist in playlist_names:
+        if playlist.endswith("m3u"):
+            filename = "%s/%s" % (original_folder, playlist)
+            output_filename ="%s/output/%s" % (origin, playlist)
+            convertPlaylist(filename, output_filename)
+            print("%s has been converted" % playlist)
 
+    print("All playlilsts have been converted!")
+    os.chdir(origin)
 
-# def convertAll():
-#     origin = os.getcwd()
-
-#     destination_folder = origin + "C:\Users\onyx\Desktop\playlists"
-#     destination_copy = origin + "C:\Users\onyx\Desktop\original"
-
-#     playlist_folder = "C:\Users\onyx\Desktop\original"
-
-#     os.chdir(playlist_folder)
-
-#     playlist_names = os.listdir(playlist_folder)
-
-#     for playlist in playlist_names:
-#         if get_m3u(playlist):
-#             convertPlaylist(playlist, destination_folder)
-#             print "%s has been converted" % playlist
-
-#             source = playlist_folder + "/" + playlist
-#             dest_cp = destination_copy + "/" + playlist
-#             shutil.copy2(source, dest_cp)
-#             print "%s has been copied to Playlists directory\n" % playlist
-
-#     print "All playlilsts have been converted!"
-#     os.chdir(origin)
-
-# # convertAll()
-
-# test_playlist = "Playlists/80s.m3u"
-# destination_test = '80s.m3u'
-#
-# convertPlaylist(test_playlist, destination_test)
+convertAll()
